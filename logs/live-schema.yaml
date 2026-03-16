@@ -1,0 +1,3478 @@
+openapi: 3.0.3
+info:
+  title: Project Management API
+  version: 1.0.0
+  description: OpenAPI schema and interactive API documentation.
+paths:
+  /api/v1/activity-logs/:
+    get:
+      operationId: activity_logs_list
+      summary: List organization activity logs
+      parameters:
+      - in: header
+        name: X-Organization-ID
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID used to scope the request.
+        required: true
+      - in: query
+        name: actor_user_id
+        schema:
+          type: string
+          format: uuid
+        description: Filter by actor user UUID.
+      - in: query
+        name: event_type
+        schema:
+          type: string
+        description: Filter by event type.
+      - in: query
+        name: fields
+        schema:
+          type: string
+        description: Comma-separated list of response fields to include, or 'all'.
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        description: 'Items per page. Allowed range: 1-100.'
+      - in: query
+        name: order
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+        description: Sort direction.
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: 1-based page number.
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Case-insensitive search term.
+      - in: query
+        name: sort_by
+        schema:
+          type: string
+          enum:
+          - created_at
+          - event_type
+          - target_type
+        description: Field used for sorting.
+      - in: query
+        name: target_type
+        schema:
+          type: string
+        description: Filter by target type.
+      tags:
+      - Activity Logs
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityLogListResponse'
+          description: ''
+  /api/v1/attachments/{id}:
+    delete:
+      operationId: attachments_delete
+      summary: Soft-delete an attachment
+      parameters:
+      - in: header
+        name: X-Organization-ID
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID used to scope the request.
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: Attachment UUID.
+        required: true
+      tags:
+      - Attachments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachmentResponse'
+          description: ''
+  /api/v1/auth/email-verification/request:
+    post:
+      operationId: auth_email_verification_request
+      summary: Request an email verification link
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailVerificationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmailVerificationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmailVerificationRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailVerificationRequestResponse'
+          description: ''
+  /api/v1/auth/login:
+    post:
+      operationId: auth_login
+      summary: Log in a user
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthLoginResponse'
+          description: ''
+  /api/v1/auth/logout:
+    post:
+      operationId: auth_logout
+      summary: Revoke active sessions
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshToken'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RefreshToken'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RefreshToken'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthLogoutResponse'
+          description: ''
+  /api/v1/auth/password-reset/confirm:
+    post:
+      operationId: auth_password_reset_confirm
+      summary: Reset password with token
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirm'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirm'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirm'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordResetConfirmResponse'
+          description: ''
+  /api/v1/auth/password-reset/request:
+    post:
+      operationId: auth_password_reset_request
+      summary: Request a password reset link
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordResetRequestResponse'
+          description: ''
+  /api/v1/auth/register:
+    post:
+      operationId: auth_register
+      summary: Register a new user
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthRegisterResponse'
+          description: ''
+  /api/v1/auth/token/refresh:
+    post:
+      operationId: auth_refresh
+      summary: Refresh access and refresh tokens
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshToken'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RefreshToken'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RefreshToken'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthRefreshResponse'
+          description: ''
+  /api/v1/auth/verify-email:
+    post:
+      operationId: auth_email_verification_confirm
+      summary: Confirm email verification token
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailVerificationConfirm'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmailVerificationConfirm'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmailVerificationConfirm'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailVerificationConfirmResponse'
+          description: ''
+  /api/v1/comments/{id}:
+    patch:
+      operationId: comments_update
+      summary: Update a comment
+      parameters:
+      - in: header
+        name: X-Organization-ID
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID used to scope the request.
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: Comment UUID.
+        required: true
+      tags:
+      - Comments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCommentUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCommentUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCommentUpdate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentResponse'
+          description: ''
+    delete:
+      operationId: comments_delete
+      summary: Soft-delete a comment
+      parameters:
+      - in: header
+        name: X-Organization-ID
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID used to scope the request.
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: Comment UUID.
+        required: true
+      tags:
+      - Comments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentResponse'
+          description: ''
+  /api/v1/invites/accept:
+    post:
+      operationId: organization_invites_accept
+      summary: Accept an organization invite
+      tags:
+      - Invites
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcceptInvite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AcceptInvite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AcceptInvite'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptInviteResponse'
+          description: ''
+  /api/v1/notifications/:
+    get:
+      operationId: notifications_list
+      summary: List current user's notifications
+      parameters:
+      - in: header
+        name: X-Organization-ID
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID used to scope the request.
+        required: true
+      - in: query
+        name: fields
+        schema:
+          type: string
+        description: Comma-separated list of response fields to include, or 'all'.
+      - in: query
+        name: is_read
+        schema:
+          type: boolean
+        description: Filter by read state.
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        description: 'Items per page. Allowed range: 1-100.'
+      - in: query
+        name: order
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+        description: Sort direction.
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: 1-based page number.
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Case-insensitive search term.
+      - in: query
+        name: sort_by
+        schema:
+          type: string
+          enum:
+          - created_at
+          - is_read
+        description: Field used for sorting.
+      - in: query
+        name: type
+        schema:
+          type: string
+        description: Filter by notification type.
+      tags:
+      - Notifications
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationListResponse'
+          description: ''
+  /api/v1/notifications/{id}/read:
+    patch:
+      operationId: notifications_mark_read
+      summary: Mark a notification as read
+      parameters:
+      - in: header
+        name: X-Organization-ID
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID used to scope the request.
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: Notification UUID.
+        required: true
+      tags:
+      - Notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedNotificationReadRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedNotificationReadRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedNotificationReadRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationMarkReadResponse'
+          description: ''
+  /api/v1/organizations/:
+    get:
+      operationId: organizations_list
+      summary: List organizations
+      parameters:
+      - in: query
+        name: fields
+        schema:
+          type: string
+        description: Comma-separated list of response fields to include, or 'all'.
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        description: 'Items per page. Allowed range: 1-100.'
+      - in: query
+        name: order
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+        description: Sort direction.
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: 1-based page number.
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Case-insensitive search term.
+      - in: query
+        name: sort_by
+        schema:
+          type: string
+          enum:
+          - created_at
+          - name
+          - slug
+          - status
+          - updated_at
+        description: Field used for sorting.
+      - in: query
+        name: status
+        schema:
+          type: string
+        description: Filter by resource status.
+      tags:
+      - Organizations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationListResponse'
+          description: ''
+    post:
+      operationId: organizations_create
+      summary: Create an organization
+      tags:
+      - Organizations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrganizationCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrganizationCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationResponse'
+          description: ''
+  /api/v1/organizations/{id}:
+    get:
+      operationId: organizations_retrieve
+      summary: Get organization details
+      parameters:
+      - in: query
+        name: fields
+        schema:
+          type: string
+        description: Comma-separated list of response fields to include, or 'all'.
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID.
+        required: true
+      tags:
+      - Organizations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationResponse'
+          description: ''
+    put:
+      operationId: organizations_update
+      summary: Replace organization fields
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID.
+        required: true
+      tags:
+      - Organizations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrganizationUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrganizationUpdate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationResponse'
+          description: ''
+    patch:
+      operationId: organizations_update_partial
+      summary: Update an organization
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID.
+        required: true
+      tags:
+      - Organizations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganizationUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganizationUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganizationUpdate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationResponse'
+          description: ''
+    delete:
+      operationId: organizations_delete
+      summary: Soft-delete an organization
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID.
+        required: true
+      tags:
+      - Organizations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationResponse'
+          description: ''
+  /api/v1/organizations/{org_id}/invites:
+    get:
+      operationId: organization_invites_list
+      description: GET → list invites  |  POST → send invite.
+      summary: List organization invites
+      parameters:
+      - in: query
+        name: fields
+        schema:
+          type: string
+        description: Comma-separated list of response fields to include, or 'all'.
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        description: 'Items per page. Allowed range: 1-100.'
+      - in: query
+        name: order
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+        description: Sort direction.
+      - in: path
+        name: org_id
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID.
+        required: true
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: 1-based page number.
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Case-insensitive search term.
+      - in: query
+        name: sort_by
+        schema:
+          type: string
+          enum:
+          - created_at
+          - expires_at
+        description: Field used for sorting.
+      - in: query
+        name: status
+        schema:
+          type: string
+        description: Filter by resource status.
+      tags:
+      - Organizations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationInvitesListResponse'
+          description: ''
+    post:
+      operationId: organization_invites_create
+      description: GET → list invites  |  POST → send invite.
+      summary: Invite a member to organization
+      parameters:
+      - in: path
+        name: org_id
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID.
+        required: true
+      tags:
+      - Organizations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InviteMember'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InviteMember'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InviteMember'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationInviteResponse'
+          description: ''
+  /api/v1/organizations/{org_id}/invites/{invite_id}:
+    delete:
+      operationId: organization_invites_revoke
+      summary: Revoke an organization invite
+      parameters:
+      - in: path
+        name: invite_id
+        schema:
+          type: string
+          format: uuid
+        description: Invitation UUID.
+        required: true
+      - in: path
+        name: org_id
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID.
+        required: true
+      tags:
+      - Organizations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationInviteRevocationResponse'
+          description: ''
+  /api/v1/organizations/{org_id}/members:
+    get:
+      operationId: organization_members_list
+      summary: List organization members
+      parameters:
+      - in: query
+        name: fields
+        schema:
+          type: string
+        description: Comma-separated list of response fields to include, or 'all'.
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        description: 'Items per page. Allowed range: 1-100.'
+      - in: query
+        name: order
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+        description: Sort direction.
+      - in: path
+        name: org_id
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID.
+        required: true
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: 1-based page number.
+      - in: query
+        name: role_id
+        schema:
+          type: string
+          format: uuid
+        description: Filter by role UUID.
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Case-insensitive search term.
+      - in: query
+        name: sort_by
+        schema:
+          type: string
+          enum:
+          - created_at
+          - joined_at
+          - status
+        description: Field used for sorting.
+      - in: query
+        name: status
+        schema:
+          type: string
+        description: Filter by resource status.
+      tags:
+      - Organizations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationMembersListResponse'
+          description: ''
+  /api/v1/organizations/{org_id}/members/{user_id}:
+    patch:
+      operationId: organization_member_update
+      description: PATCH → update role/status  |  DELETE → remove member.
+      summary: Update organization membership
+      parameters:
+      - in: path
+        name: org_id
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID.
+        required: true
+      - in: path
+        name: user_id
+        schema:
+          type: string
+          format: uuid
+        description: User UUID.
+        required: true
+      tags:
+      - Organizations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateMembership'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateMembership'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateMembership'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationMemberResponse'
+          description: ''
+    delete:
+      operationId: organization_member_remove
+      description: PATCH → update role/status  |  DELETE → remove member.
+      summary: Remove a member from organization
+      parameters:
+      - in: path
+        name: org_id
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID.
+        required: true
+      - in: path
+        name: user_id
+        schema:
+          type: string
+          format: uuid
+        description: User UUID.
+        required: true
+      tags:
+      - Organizations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationMemberResponse'
+          description: ''
+  /api/v1/projects/:
+    get:
+      operationId: projects_list
+      summary: List projects
+      parameters:
+      - in: header
+        name: X-Organization-ID
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID used to scope the request.
+        required: true
+      - in: query
+        name: fields
+        schema:
+          type: string
+        description: Comma-separated list of response fields to include, or 'all'.
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        description: 'Items per page. Allowed range: 1-100.'
+      - in: query
+        name: order
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+        description: Sort direction.
+      - in: query
+        name: organization_id
+        schema:
+          type: string
+          format: uuid
+        description: Optional organization filter. Must match X-Organization-ID when
+          provided.
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: 1-based page number.
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Case-insensitive search term.
+      - in: query
+        name: sort_by
+        schema:
+          type: string
+          enum:
+          - created_at
+          - deadline_at
+          - name
+          - status
+          - updated_at
+        description: Field used for sorting.
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - active
+          - archived
+          - completed
+        description: Filter by project status.
+      tags:
+      - Projects
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectListResponse'
+          description: ''
+    post:
+      operationId: projects_create
+      summary: Create a project
+      parameters:
+      - in: header
+        name: X-Organization-ID
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID used to scope the request.
+        required: true
+      tags:
+      - Projects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProjectCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProjectCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+          description: ''
+  /api/v1/projects/{id}:
+    get:
+      operationId: projects_retrieve
+      summary: Get project details
+      parameters:
+      - in: header
+        name: X-Organization-ID
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID used to scope the request.
+        required: true
+      - in: query
+        name: fields
+        schema:
+          type: string
+        description: Comma-separated list of response fields to include, or 'all'.
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: Project UUID.
+        required: true
+      tags:
+      - Projects
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+          description: ''
+    patch:
+      operationId: projects_update_partial
+      summary: Update a project
+      parameters:
+      - in: header
+        name: X-Organization-ID
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID used to scope the request.
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: Project UUID.
+        required: true
+      tags:
+      - Projects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProjectUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProjectUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProjectUpdate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+          description: ''
+    delete:
+      operationId: projects_archive
+      summary: Archive a project
+      parameters:
+      - in: header
+        name: X-Organization-ID
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID used to scope the request.
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: Project UUID.
+        required: true
+      tags:
+      - Projects
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+          description: ''
+  /api/v1/projects/{id}/members:
+    post:
+      operationId: projects_members_add
+      summary: Add a member to project
+      parameters:
+      - in: header
+        name: X-Organization-ID
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID used to scope the request.
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: Project UUID.
+        required: true
+      tags:
+      - Projects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectMemberAdd'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProjectMemberAdd'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProjectMemberAdd'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectMemberResponse'
+          description: ''
+  /api/v1/projects/{id}/members/{project_member_id}:
+    delete:
+      operationId: projects_members_remove
+      summary: Remove a member from project
+      parameters:
+      - in: header
+        name: X-Organization-ID
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID used to scope the request.
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: Project UUID.
+        required: true
+      - in: path
+        name: project_member_id
+        schema:
+          type: string
+          format: uuid
+        description: Project member UUID.
+        required: true
+      tags:
+      - Projects
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectMemberResponse'
+          description: ''
+  /api/v1/tasks/:
+    get:
+      operationId: tasks_list
+      summary: List tasks
+      parameters:
+      - in: header
+        name: X-Organization-ID
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID used to scope the request.
+        required: true
+      - in: query
+        name: assignee_user_id
+        schema:
+          type: string
+          format: uuid
+        description: Filter by assignee user UUID.
+      - in: query
+        name: fields
+        schema:
+          type: string
+        description: Comma-separated list of response fields to include, or 'all'.
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        description: 'Items per page. Allowed range: 1-100.'
+      - in: query
+        name: order
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+        description: Sort direction.
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: 1-based page number.
+      - in: query
+        name: priority
+        schema:
+          type: string
+          enum:
+          - high
+          - low
+          - medium
+        description: Filter by task priority.
+      - in: query
+        name: project_id
+        schema:
+          type: string
+          format: uuid
+        description: Filter tasks by project UUID.
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Case-insensitive search term.
+      - in: query
+        name: sort_by
+        schema:
+          type: string
+          enum:
+          - created_at
+          - due_at
+          - priority
+          - status
+          - title
+        description: Field used for sorting.
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - done
+          - in_progress
+          - todo
+        description: Filter by task status.
+      tags:
+      - Tasks
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskListResponse'
+          description: ''
+    post:
+      operationId: tasks_create
+      summary: Create a task
+      parameters:
+      - in: header
+        name: X-Organization-ID
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID used to scope the request.
+        required: true
+      tags:
+      - Tasks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+          description: ''
+  /api/v1/tasks/{id}:
+    get:
+      operationId: tasks_retrieve
+      summary: Get task details
+      parameters:
+      - in: header
+        name: X-Organization-ID
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID used to scope the request.
+        required: true
+      - in: query
+        name: fields
+        schema:
+          type: string
+        description: Comma-separated list of response fields to include, or 'all'.
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: Task UUID.
+        required: true
+      tags:
+      - Tasks
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+          description: ''
+    patch:
+      operationId: tasks_update_partial
+      summary: Update a task
+      parameters:
+      - in: header
+        name: X-Organization-ID
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID used to scope the request.
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: Task UUID.
+        required: true
+      tags:
+      - Tasks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTaskUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTaskUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTaskUpdate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+          description: ''
+    delete:
+      operationId: tasks_delete
+      summary: Soft-delete a task
+      parameters:
+      - in: header
+        name: X-Organization-ID
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID used to scope the request.
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: Task UUID.
+        required: true
+      tags:
+      - Tasks
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+          description: ''
+  /api/v1/tasks/{task_id}/attachments:
+    get:
+      operationId: tasks_attachments_list
+      summary: List task attachments
+      parameters:
+      - in: header
+        name: X-Organization-ID
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID used to scope the request.
+        required: true
+      - in: query
+        name: fields
+        schema:
+          type: string
+        description: Comma-separated list of response fields to include, or 'all'.
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        description: 'Items per page. Allowed range: 1-100.'
+      - in: query
+        name: order
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+        description: Sort direction.
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: 1-based page number.
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Case-insensitive search term.
+      - in: query
+        name: sort_by
+        schema:
+          type: string
+          enum:
+          - created_at
+          - file_name
+          - size_bytes
+        description: Field used for sorting.
+      - in: path
+        name: task_id
+        schema:
+          type: string
+          format: uuid
+        description: Task UUID.
+        required: true
+      tags:
+      - Tasks
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachmentListResponse'
+          description: ''
+    post:
+      operationId: tasks_attachments_create
+      summary: Upload an attachment to a task
+      parameters:
+      - in: header
+        name: X-Organization-ID
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID used to scope the request.
+        required: true
+      - in: path
+        name: task_id
+        schema:
+          type: string
+          format: uuid
+        description: Task UUID.
+        required: true
+      tags:
+      - Tasks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttachmentUpload'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AttachmentUpload'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AttachmentUpload'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachmentResponse'
+          description: ''
+  /api/v1/tasks/{task_id}/comments:
+    post:
+      operationId: tasks_comments_create
+      summary: Create a task comment
+      parameters:
+      - in: header
+        name: X-Organization-ID
+        schema:
+          type: string
+          format: uuid
+        description: Organization UUID used to scope the request.
+        required: true
+      - in: path
+        name: task_id
+        schema:
+          type: string
+          format: uuid
+        description: Task UUID.
+        required: true
+      tags:
+      - Tasks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CommentCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CommentCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentResponse'
+          description: ''
+  /api/v1/users/me:
+    get:
+      operationId: users_me_retrieve
+      summary: Get current user profile
+      tags:
+      - Users
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+          description: ''
+  /api/v1/users/me/update:
+    put:
+      operationId: users_me_replace
+      summary: Replace current user profile fields
+      tags:
+      - Users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserUpdateProfile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserUpdateProfile'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+          description: ''
+    patch:
+      operationId: users_me_update
+      summary: Update current user profile
+      tags:
+      - Users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserUpdateProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserUpdateProfile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserUpdateProfile'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+          description: ''
+  /health/:
+    get:
+      operationId: health_check
+      summary: Health check
+      tags:
+      - health
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheckResponse'
+          description: ''
+components:
+  schemas:
+    AcceptInvite:
+      type: object
+      properties:
+        token:
+          type: string
+      required:
+      - token
+    AcceptInviteData:
+      type: object
+      properties:
+        membership:
+          $ref: '#/components/schemas/OrganizationMembershipPayload'
+        invite:
+          $ref: '#/components/schemas/AcceptedInviteDetails'
+      required:
+      - invite
+      - membership
+    AcceptInviteResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/AcceptInviteData'
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    AcceptedInviteDetails:
+      type: object
+      properties:
+        id:
+          type: string
+        accepted_at:
+          type: string
+          format: date-time
+      required:
+      - accepted_at
+      - id
+    ActivityLogListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ActivityLogListResponseData'
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    ActivityLogListResponseData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityLogPayload'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+      required:
+      - items
+      - pagination
+    ActivityLogPayload:
+      type: object
+      properties:
+        id:
+          type: string
+        organization_id:
+          type: string
+        actor_user_id:
+          type: string
+        event_type:
+          type: string
+        target_type:
+          type: string
+        target_id:
+          type: string
+        metadata_json: {}
+        request_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+        updated_by:
+          type: string
+      required:
+      - actor_user_id
+      - created_at
+      - created_by
+      - event_type
+      - id
+      - metadata_json
+      - organization_id
+      - request_id
+      - target_id
+      - target_type
+      - updated_at
+      - updated_by
+    AttachmentListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/AttachmentListResponseData'
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    AttachmentListResponseData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttachmentPayload'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+      required:
+      - items
+      - pagination
+    AttachmentPayload:
+      type: object
+      properties:
+        id:
+          type: string
+        task_id:
+          type: string
+        uploaded_by_user_id:
+          type: string
+        file_name:
+          type: string
+        content_type:
+          type: string
+        size_bytes:
+          type: integer
+        storage_key:
+          type: string
+        checksum:
+          type: string
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+        updated_by:
+          type: string
+      required:
+      - checksum
+      - content_type
+      - created_at
+      - created_by
+      - deleted_at
+      - file_name
+      - id
+      - size_bytes
+      - storage_key
+      - task_id
+      - updated_at
+      - updated_by
+      - uploaded_by_user_id
+    AttachmentResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/AttachmentPayload'
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    AttachmentUpload:
+      type: object
+      properties:
+        file_name:
+          type: string
+          maxLength: 255
+        content_type:
+          type: string
+          maxLength: 150
+        size_bytes:
+          type: integer
+          minimum: 1
+        storage_key:
+          type: string
+          maxLength: 500
+        checksum:
+          type: string
+          maxLength: 128
+      required:
+      - checksum
+      - content_type
+      - file_name
+      - size_bytes
+      - storage_key
+    AuthLoginData:
+      type: object
+      properties:
+        session:
+          $ref: '#/components/schemas/AuthSession'
+        tokens:
+          $ref: '#/components/schemas/AuthTokens'
+        user:
+          $ref: '#/components/schemas/AuthLoginUser'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+        updated_by:
+          type: string
+      required:
+      - created_at
+      - created_by
+      - session
+      - tokens
+      - updated_at
+      - updated_by
+      - user
+    AuthLoginResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/AuthLoginData'
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    AuthLoginUser:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        first_name:
+          type: string
+        last_name:
+          type: string
+        is_email_verified:
+          type: boolean
+        is_active:
+          type: boolean
+        last_login_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - email
+      - first_name
+      - id
+      - is_active
+      - is_email_verified
+      - last_login_at
+      - last_name
+    AuthLogoutData:
+      type: object
+      properties:
+        user_id:
+          type: string
+        revoked_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        updated_by:
+          type: string
+      required:
+      - revoked_at
+      - updated_at
+      - updated_by
+      - user_id
+    AuthLogoutResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/AuthLogoutData'
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    AuthRefreshData:
+      type: object
+      properties:
+        tokens:
+          $ref: '#/components/schemas/AuthTokens'
+        session:
+          $ref: '#/components/schemas/AuthRefreshSession'
+        updated_at:
+          type: string
+          format: date-time
+        updated_by:
+          type: string
+      required:
+      - session
+      - tokens
+      - updated_at
+      - updated_by
+    AuthRefreshResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/AuthRefreshData'
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    AuthRefreshSession:
+      type: object
+      properties:
+        session_id:
+          type: string
+        issued_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        prior_jti:
+          type: string
+      required:
+      - expires_at
+      - issued_at
+      - prior_jti
+      - session_id
+    AuthRegisterData:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        first_name:
+          type: string
+        last_name:
+          type: string
+        is_email_verified:
+          type: boolean
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+        updated_by:
+          type: string
+        verification_sent_to:
+          type: string
+          format: email
+      required:
+      - created_at
+      - created_by
+      - email
+      - first_name
+      - id
+      - is_active
+      - is_email_verified
+      - last_name
+      - updated_at
+      - updated_by
+      - verification_sent_to
+    AuthRegisterResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/AuthRegisterData'
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    AuthSession:
+      type: object
+      properties:
+        session_id:
+          type: string
+        issued_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - expires_at
+      - issued_at
+      - session_id
+    AuthTokens:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        token_type:
+          type: string
+        access_expires_in:
+          type: integer
+        refresh_expires_in:
+          type: integer
+      required:
+      - access_expires_in
+      - access_token
+      - refresh_expires_in
+      - refresh_token
+      - token_type
+    CommentCreate:
+      type: object
+      properties:
+        body:
+          type: string
+        parent_comment_id:
+          type: string
+          format: uuid
+          nullable: true
+          readOnly: true
+      required:
+      - body
+      - parent_comment_id
+    CommentPayload:
+      type: object
+      properties:
+        id:
+          type: string
+        task_id:
+          type: string
+        author_user_id:
+          type: string
+        parent_comment_id:
+          type: string
+          nullable: true
+        body:
+          type: string
+        is_edited:
+          type: boolean
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+        updated_by:
+          type: string
+      required:
+      - author_user_id
+      - body
+      - created_at
+      - created_by
+      - deleted_at
+      - id
+      - is_edited
+      - parent_comment_id
+      - task_id
+      - updated_at
+      - updated_by
+    CommentResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/CommentPayload'
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    EmailVerificationConfirm:
+      type: object
+      properties:
+        token:
+          type: string
+      required:
+      - token
+    EmailVerificationConfirmData:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        is_email_verified:
+          type: boolean
+        verified_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        updated_by:
+          type: string
+      required:
+      - email
+      - id
+      - is_email_verified
+      - updated_at
+      - updated_by
+      - verified_at
+    EmailVerificationConfirmResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/EmailVerificationConfirmData'
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    EmailVerificationRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+      - email
+    EmailVerificationRequestData:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        message_sent_to:
+          type: string
+          format: email
+        expires_in:
+          type: integer
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_by:
+          type: string
+      required:
+      - email
+      - expires_in
+      - message_sent_to
+      - updated_at
+      - updated_by
+    EmailVerificationRequestResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/EmailVerificationRequestData'
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    HealthCheckResponse:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+      - status
+    InviteMember:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        role_id:
+          type: string
+          format: uuid
+      required:
+      - email
+      - role_id
+    NotificationListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/NotificationListResponseData'
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    NotificationListResponseData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationPayload'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+      required:
+      - items
+      - pagination
+    NotificationMarkReadData:
+      type: object
+      properties:
+        id:
+          type: string
+        recipient_user_id:
+          type: string
+        organization_id:
+          type: string
+        is_read:
+          type: boolean
+        read_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        updated_by:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+      required:
+      - created_at
+      - created_by
+      - id
+      - is_read
+      - organization_id
+      - read_at
+      - recipient_user_id
+      - updated_at
+      - updated_by
+    NotificationMarkReadResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/NotificationMarkReadData'
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    NotificationPayload:
+      type: object
+      properties:
+        id:
+          type: string
+        recipient_user_id:
+          type: string
+        organization_id:
+          type: string
+        type:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        payload_json: {}
+        is_read:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        read_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+        updated_by:
+          type: string
+      required:
+      - body
+      - created_at
+      - created_by
+      - id
+      - is_read
+      - organization_id
+      - payload_json
+      - read_at
+      - recipient_user_id
+      - title
+      - type
+      - updated_at
+      - updated_by
+    OrganizationCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 120
+        slug:
+          type: string
+          maxLength: 140
+          pattern: ^[-a-zA-Z0-9_]+$
+      required:
+      - name
+      - slug
+    OrganizationInvitePayload:
+      type: object
+      properties:
+        id:
+          type: string
+        organization_id:
+          type: string
+        email:
+          type: string
+          format: email
+        role_id:
+          type: string
+        role_code:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+        accepted_at:
+          type: string
+          format: date-time
+          nullable: true
+        revoked_at:
+          type: string
+          format: date-time
+          nullable: true
+        invited_by_user_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+        updated_by:
+          type: string
+      required:
+      - accepted_at
+      - created_at
+      - created_by
+      - email
+      - expires_at
+      - id
+      - invited_by_user_id
+      - organization_id
+      - revoked_at
+      - role_code
+      - role_id
+      - updated_at
+      - updated_by
+    OrganizationInviteResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/OrganizationInvitePayload'
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    OrganizationInviteRevocationData:
+      type: object
+      properties:
+        id:
+          type: string
+        organization_id:
+          type: string
+        email:
+          type: string
+          format: email
+        revoked_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        updated_by:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+      required:
+      - created_at
+      - created_by
+      - email
+      - id
+      - organization_id
+      - revoked_at
+      - updated_at
+      - updated_by
+    OrganizationInviteRevocationResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OrganizationInviteRevocationData'
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    OrganizationInvitesListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OrganizationInvitesListResponseData'
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    OrganizationInvitesListResponseData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrganizationInvitePayload'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+      required:
+      - items
+      - pagination
+    OrganizationListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OrganizationListResponseData'
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    OrganizationListResponseData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrganizationPayload'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+      required:
+      - items
+      - pagination
+    OrganizationMemberResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/OrganizationMembershipPayload'
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    OrganizationMembersListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OrganizationMembersListResponseData'
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    OrganizationMembersListResponseData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrganizationMembershipPayload'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+      required:
+      - items
+      - pagination
+    OrganizationMembershipPayload:
+      type: object
+      properties:
+        id:
+          type: string
+        organization_id:
+          type: string
+        user_id:
+          type: string
+        role_id:
+          type: string
+        role_code:
+          type: string
+        status:
+          type: string
+        joined_at:
+          type: string
+          format: date-time
+          nullable: true
+        invited_by_user_id:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+          nullable: true
+        updated_by:
+          type: string
+          nullable: true
+        removed_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - created_at
+      - created_by
+      - id
+      - invited_by_user_id
+      - joined_at
+      - organization_id
+      - role_code
+      - role_id
+      - status
+      - updated_at
+      - updated_by
+      - user_id
+    OrganizationPayload:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        owner_user_id:
+          type: string
+        status:
+          type: string
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+          nullable: true
+        updated_by:
+          type: string
+          nullable: true
+      required:
+      - created_at
+      - created_by
+      - deleted_at
+      - id
+      - name
+      - owner_user_id
+      - slug
+      - status
+      - updated_at
+      - updated_by
+    OrganizationResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/OrganizationPayload'
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    OrganizationStatusEnum:
+      enum:
+      - active
+      - suspended
+      - archived
+      type: string
+      description: |-
+        * `active` - Active
+        * `suspended` - Suspended
+        * `archived` - Archived
+    OrganizationUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 120
+        slug:
+          type: string
+          maxLength: 140
+          pattern: ^[-a-zA-Z0-9_]+$
+        status:
+          $ref: '#/components/schemas/OrganizationStatusEnum'
+      required:
+      - name
+      - slug
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total_items:
+          type: integer
+        total_pages:
+          type: integer
+        has_next:
+          type: boolean
+        has_prev:
+          type: boolean
+      required:
+      - has_next
+      - has_prev
+      - limit
+      - page
+      - total_items
+      - total_pages
+    PasswordResetConfirm:
+      type: object
+      properties:
+        token:
+          type: string
+        new_password:
+          type: string
+          writeOnly: true
+          minLength: 12
+      required:
+      - new_password
+      - token
+    PasswordResetConfirmData:
+      type: object
+      properties:
+        user_id:
+          type: string
+        email:
+          type: string
+          format: email
+        reset_at:
+          type: string
+          format: date-time
+        sessions_revoked:
+          type: boolean
+        updated_at:
+          type: string
+          format: date-time
+        updated_by:
+          type: string
+      required:
+      - email
+      - reset_at
+      - sessions_revoked
+      - updated_at
+      - updated_by
+      - user_id
+    PasswordResetConfirmResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PasswordResetConfirmData'
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    PasswordResetRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+      - email
+    PasswordResetRequestData:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        message_sent_to:
+          type: string
+          format: email
+        expires_in:
+          type: integer
+        updated_at:
+          type: string
+          format: date-time
+        updated_by:
+          type: string
+      required:
+      - email
+      - expires_in
+      - message_sent_to
+      - updated_at
+      - updated_by
+    PasswordResetRequestResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PasswordResetRequestData'
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    PatchedCommentUpdate:
+      type: object
+      properties:
+        body:
+          type: string
+    PatchedNotificationReadRequest:
+      type: object
+      properties:
+        is_read:
+          type: boolean
+          description: Must be true.
+    PatchedOrganizationUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 120
+        slug:
+          type: string
+          maxLength: 140
+          pattern: ^[-a-zA-Z0-9_]+$
+        status:
+          $ref: '#/components/schemas/OrganizationStatusEnum'
+    PatchedProjectUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/ProjectStatusEnum'
+        deadline_at:
+          type: string
+          format: date-time
+          nullable: true
+    PatchedTaskUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 300
+        description:
+          type: string
+          nullable: true
+        priority:
+          $ref: '#/components/schemas/PriorityEnum'
+        status:
+          $ref: '#/components/schemas/TaskStatusEnum'
+        due_at:
+          type: string
+          format: date-time
+          nullable: true
+        assignee_user_id:
+          type: string
+          format: uuid
+          nullable: true
+          readOnly: true
+    PatchedUpdateMembership:
+      type: object
+      properties:
+        role_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          maxLength: 20
+    PatchedUserUpdateProfile:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+    PriorityEnum:
+      enum:
+      - low
+      - medium
+      - high
+      type: string
+      description: |-
+        * `low` - Low
+        * `medium` - Medium
+        * `high` - High
+    ProjectCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/ProjectStatusEnum'
+        deadline_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - name
+    ProjectListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ProjectListResponseData'
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    ProjectListResponseData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectPayload'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+      required:
+      - items
+      - pagination
+    ProjectMemberAdd:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        project_role:
+          type: string
+          default: contributor
+      required:
+      - user_id
+    ProjectMemberPayload:
+      type: object
+      properties:
+        id:
+          type: string
+        project_id:
+          type: string
+        user_id:
+          type: string
+        project_role:
+          type: string
+        added_by_user_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+        updated_by:
+          type: string
+        removed_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - added_by_user_id
+      - created_at
+      - created_by
+      - id
+      - project_id
+      - project_role
+      - updated_at
+      - updated_by
+      - user_id
+    ProjectMemberResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/ProjectMemberPayload'
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    ProjectPayload:
+      type: object
+      properties:
+        id:
+          type: string
+        organization_id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+        deadline_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_by_user_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+        updated_by:
+          type: string
+      required:
+      - created_at
+      - created_by
+      - created_by_user_id
+      - deadline_at
+      - description
+      - id
+      - name
+      - organization_id
+      - status
+      - updated_at
+      - updated_by
+    ProjectResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/ProjectPayload'
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    ProjectStatusEnum:
+      enum:
+      - active
+      - completed
+      - archived
+      type: string
+      description: |-
+        * `active` - Active
+        * `completed` - Completed
+        * `archived` - Archived
+    RefreshToken:
+      type: object
+      properties:
+        refresh_token:
+          type: string
+      required:
+      - refresh_token
+    TaskCreate:
+      type: object
+      properties:
+        project_id:
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          type: string
+          maxLength: 300
+        description:
+          type: string
+          nullable: true
+        priority:
+          $ref: '#/components/schemas/PriorityEnum'
+        status:
+          $ref: '#/components/schemas/TaskStatusEnum'
+        due_at:
+          type: string
+          format: date-time
+          nullable: true
+        assignee_user_id:
+          type: string
+          format: uuid
+          nullable: true
+          readOnly: true
+      required:
+      - assignee_user_id
+      - project_id
+      - title
+    TaskListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/TaskListResponseData'
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    TaskListResponseData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskPayload'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+      required:
+      - items
+      - pagination
+    TaskPayload:
+      type: object
+      properties:
+        id:
+          type: string
+        project_id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        priority:
+          type: string
+        status:
+          type: string
+        due_at:
+          type: string
+          format: date-time
+          nullable: true
+        assignee_user_id:
+          type: string
+          nullable: true
+        created_by_user_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_by:
+          type: string
+        updated_by:
+          type: string
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - assignee_user_id
+      - completed_at
+      - created_at
+      - created_by
+      - created_by_user_id
+      - description
+      - due_at
+      - id
+      - priority
+      - project_id
+      - status
+      - title
+      - updated_at
+      - updated_by
+    TaskResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/TaskPayload'
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    TaskStatusEnum:
+      enum:
+      - todo
+      - in_progress
+      - done
+      type: string
+      description: |-
+        * `todo` - To Do
+        * `in_progress` - In Progress
+        * `done` - Done
+    UserLogin:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - email
+      - password
+    UserProfileData:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        first_name:
+          type: string
+        last_name:
+          type: string
+        is_email_verified:
+          type: boolean
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+        updated_by:
+          type: string
+      required:
+      - created_at
+      - created_by
+      - email
+      - first_name
+      - id
+      - is_active
+      - is_email_verified
+      - last_name
+      - updated_at
+      - updated_by
+    UserProfileResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UserProfileData'
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+      - data
+      - message
+      - success
+    UserRegister:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 255
+        password:
+          type: string
+          writeOnly: true
+          minLength: 12
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+      required:
+      - email
+      - first_name
+      - last_name
+      - password
+    UserUpdateProfile:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+      required:
+      - first_name
+      - last_name
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+tags:
+- name: Authentication
+  description: Login, registration, token, and account recovery APIs.
+- name: Users
+  description: User profile and account management APIs.
+- name: Organizations
+  description: Organization and member management APIs.
+- name: Invites
+  description: Organization invitation acceptance APIs.
+- name: Projects
+  description: Project and project membership APIs.
+- name: Tasks
+  description: Task lifecycle and assignment APIs.
+- name: Comments
+  description: Task comment APIs.
+- name: Attachments
+  description: File attachment APIs.
+- name: Notifications
+  description: Notification listing and state APIs.
+- name: Activity Logs
+  description: Audit and activity history APIs.
+- name: Webhooks
+  description: Webhook integration endpoints.
